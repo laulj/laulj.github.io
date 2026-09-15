@@ -105,9 +105,11 @@ jobs:
                           ;;
                   esac
 
-                  # The resumes and the degree certificate live in public/ and are copied
-                  # into dist/ verbatim, so their live URLs must survive the switch.
-                  for file in Web3_Developer_Lau_Lok_Jing.pdf Junior_Developer_Lau_Lok_Jing.pdf EEBachelorDegCertificate.pdf; do
+                  # Everything in public/ is copied into dist/ verbatim, so these live URLs
+                  # all have to survive a deploy: the two resumes, the degree certificate,
+                  # and og.png, which is what makes a shared link render as a card rather
+                  # than a bare URL.
+                  for file in Web3_Developer_Lau_Lok_Jing.pdf Junior_Developer_Lau_Lok_Jing.pdf EEBachelorDegCertificate.pdf og.png; do
                       code=$(curl -sS -o /dev/null -w '%{http_code}' "${url%/}/${file}")
                       if [ "$code" != "200" ]; then
                           echo "::error::${file} returned ${code}"
