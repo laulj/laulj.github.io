@@ -1,0 +1,174 @@
+@import "tailwindcss";
+/* Brand fonts are self-hosted (see src/styles/fonts.css) so no third-party origin
+   sits in the paint path. The previous page pulled a render-blocking stylesheet
+   from fonts.googleapis.com, which cost a cold DNS lookup plus a TLS handshake
+   before the first paint could even begin. */
+@import "./styles/fonts.css";
+
+/* Design tokens. Tailwind 4 turns each of these into utilities (--color-accent-500
+   yields bg-accent-500/text-accent-500 and so on), so the palette lives in one
+   place rather than the 130-line <style> block the hand-written page carried.
+   The values are the ones the previous site already shipped, kept for continuity:
+   the emerald accent matches the GitHub profile badge that points here. */
+@theme {
+    --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-display: "Instrument Serif", ui-serif, Georgia, Cambria, serif;
+
+    --color-ink-950: #05070d;
+    --color-ink-900: #0b0f19;
+    --color-ink-850: #0e1425;
+    --color-ink-800: #111827;
+    --color-ink-700: #1f2937;
+
+    --color-accent-200: #a7f3d0;
+    --color-accent-300: #6ee7b7;
+    --color-accent-400: #34d399;
+    --color-accent-500: #10b981;
+    --color-accent-600: #059669;
+
+    --color-warn-300: #fcd34d;
+    --color-warn-400: #fbbf24;
+    --color-warn-500: #f59e0b;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    /* Dark-only by design: the page argues for engineering judgement, so it should
+       not carry a light-mode variant that nothing actually uses. */
+    body {
+        @apply bg-ink-900 font-sans text-slate-200 antialiased;
+    }
+
+    ::selection {
+        @apply bg-accent-500/30 text-white;
+    }
+
+    /* Anyone who asks their OS for less motion gets none — the GSAP timelines are
+       also disabled in usePrefersReducedMotion, so this is belt and braces. */
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+        }
+    }
+}
+
+/* ── Ambient background ──────────────────────────────────────────────────────
+   Deliberately unlayered: nothing here competes with a Tailwind utility on the
+   same element, so there is no cascade fight to lose.
+
+   The orbs and grid live in CSS rather than on the canvas because a large blurred
+   gradient is nearly free as a composited layer and expensive to redraw 60 times a
+   second. Motion is slow and *linear* on purpose: for constant ambient movement an
+   easing curve makes a loop read as a one-shot animation restarting. */
+
+.ambient-grid {
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 130% 85% at 50% 0%, #000 25%, transparent 80%);
+}
+
+.ambient-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    /* transform-only animation keeps this on the compositor */
+    will-change: transform;
+}
+
+.ambient-orb-a {
+    top: -14rem;
+    left: 2%;
+    height: 34rem;
+    width: 34rem;
+    background: rgba(16, 185, 129, 0.16);
+    animation: ambient-drift-a 54s linear infinite;
+}
+
+.ambient-orb-b {
+    top: 16%;
+    right: -2%;
+    height: 26rem;
+    width: 26rem;
+    background: rgba(13, 148, 136, 0.13);
+    animation: ambient-drift-b 71s linear infinite;
+}
+
+@keyframes ambient-drift-a {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(6rem, 3rem, 0) scale(1.08);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+@keyframes ambient-drift-b {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1.05);
+    }
+    50% {
+        transform: translate3d(-5rem, -2.5rem, 0) scale(1);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1.05);
+    }
+}
+
+/* Fading the mesh out through the top ~140px keeps animated pixels away from the
+   header's backdrop-blur. A blur with moving content behind it has to be
+   re-composited every frame — an easy way to turn a cheap animation into dropped
+   frames on a low-end machine. */
+.ambient-mesh {
+    mask-image: linear-gradient(to bottom, transparent 0, #000 140px);
+}
+
+.ambient-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 34rem;
+    width: 34rem;
+    opacity: 0;
+    /* Only the fade is transitioned, on a strong ease-out. The position is written
+       straight to `transform` on each pointer event: any easing there reads as the
+       light lagging behind the cursor, which is worse than no effect at all. */
+    transition: opacity 320ms cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform, opacity;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.13) 0%, rgba(16, 185, 129, 0) 62%);
+}
+
+/* The boot intro's block caret. Steps rather than fades, so it reads as a terminal
+   cursor — and it is the only thing in the intro that moves on its own. */
+.intro-caret {
+    display: inline-block;
+    width: 7px;
+    height: 1.05em;
+    margin-left: 3px;
+    vertical-align: text-bottom;
+    background: var(--color-accent-400);
+    animation: intro-blink 1s steps(2, start) infinite;
+}
+
+@keyframes intro-blink {
+    50% {
+        opacity: 0;
+    }
+}

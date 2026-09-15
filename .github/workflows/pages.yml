@@ -1,0 +1,69 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GITHUB_TOKEN needs `pages: write` to publish and `id-token: write` for the OIDC
+# handshake deploy-pages uses; `contents: read` is all the checkout needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a deploy in flight finish rather than cancelling it halfway through publishing.
+# A queued run behind it is cheaper than a half-updated site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # Requires pnpm to be on PATH already, which is why the step above comes first.
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Nothing reaches Pages unless it formats and passes. The provenance tests in
+      # particular are load-bearing: they are what stops an unsourced number being
+      # published, so a failure here must not be a warning.
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          # dist/ is what Pages serves. The two resumes and the degree certificate
+          # live in public/ and are copied into dist/ verbatim, which is what keeps
+          # their existing live URLs working.
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
