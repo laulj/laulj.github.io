@@ -67,3 +67,61 @@ jobs:
         steps:
             - id: deployment
               uses: actions/deploy-pages@v4
+
+            # The first version of this job reported success while the live site was
+            # serving the repository root instead of this artifact: a Vite entry, handed
+            # over as application/octet-stream, so the browser refused the module and the
+            # page rendered nothing. Every step was green and the site was broken. A
+            # deployment nobody observes is not a deployment, so this reads the published
+            # site back and fails the run if it is not the built app.
+            - name: Smoke-check the published site
+              run: |
+                  set -euo pipefail
+                  url="${{ steps.deployment.outputs.page_url }}"
+
+                  # Cache-bust so this reads the origin rather than a CDN copy, and retry
+                  # because the edge can lag a few seconds behind the deployment.
+                  html=""
+                  for attempt in $(seq 1 8); do
+                      html=$(curl -fsS "${url}?cb=${GITHUB_RUN_ID}-${attempt}" 2>/dev/null || true)
+                      echo "$html" | grep -q '/assets/index-' && break
+                      echo "attempt ${attempt}: homepage is not the built app yet"
+                      sleep 10
+                  done
+                  echo "$html" | grep -q '/assets/index-' || {
+                      echo "::error::homepage is not the built app - is Pages still serving the branch root?"
+                      exit 1
+                  }
+
+                  # A module script only runs if the server calls it JavaScript. That MIME
+                  # mismatch is exactly what broke when Pages served the Vite entry.
+                  asset=$(echo "$html" | grep -o '/assets/index-[A-Za-z0-9_-]*\.js' | head -1)
+                  ctype=$(curl -fsSI "${url%/}${asset}" | tr -d '\r' | awk 'tolower($1) == "content-type:" { print $2 }')
+                  case "$ctype" in
+                      *javascript*) echo "asset served as $ctype" ;;
+                      *)
+                          echo "::error::$asset served as ${ctype:-nothing}, not JavaScript"
+                          exit 1
+                          ;;
+                  esac
+
+                  # The resumes and the degree certificate live in public/ and are copied
+                  # into dist/ verbatim, so their live URLs must survive the switch.
+                  for file in Web3_Developer_Lau_Lok_Jing.pdf Junior_Developer_Lau_Lok_Jing.pdf EEBachelorDegCertificate.pdf; do
+                      code=$(curl -sS -o /dev/null -w '%{http_code}' "${url%/}/${file}")
+                      if [ "$code" != "200" ]; then
+                          echo "::error::${file} returned ${code}"
+                          exit 1
+                      fi
+                      echo "${file} -> 200"
+                  done
+
+                  # dist/ has no public/ directory, so this path disappearing is the
+                  # clearest single sign that the artifact replaced the branch build.
+                  code=$(curl -sS -o /dev/null -w '%{http_code}' "${url%/}/public/Web3_Developer_Lau_Lok_Jing.pdf")
+                  if [ "$code" != "404" ]; then
+                      echo "::error::still serving the branch build (/public returned ${code})"
+                      exit 1
+                  fi
+
+                  echo "published site verified"
