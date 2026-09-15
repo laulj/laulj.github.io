@@ -30,6 +30,14 @@
     --color-warn-300: #fcd34d;
     --color-warn-400: #fbbf24;
     --color-warn-500: #f59e0b;
+
+    /* Tertiary text. Tailwind's slate-500 (#64748b) was carrying this job, and it
+       measures 3.74:1 against the darkest panel in the build (the terminal title
+       bar) and 4.02:1 against the page -- under the 4.5:1 AA floor for body text,
+       which is exactly what it was being used for. This step sits just below
+       slate-400, so the tier stays visibly quieter than secondary text while
+       clearing AA on every background actually used here: worst case 5.34:1. */
+    --color-slate-450: #7f8ea3;
 }
 
 @layer base {

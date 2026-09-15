@@ -106,13 +106,13 @@ export const BootIntro: FC<{ onDone: () => void }> = ({ onDone }) => {
                     <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
                     <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
                     <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-                    <span className="ml-3 truncate font-mono text-[11px] text-slate-500">laulj — zsh</span>
+                    <span className="ml-3 truncate font-mono text-[11px] text-slate-450">laulj — zsh</span>
                 </div>
 
                 <div className="space-y-1 p-5 font-mono text-[12px] leading-relaxed sm:text-[13px]">
                     {timeline.appearances.map((appearance, index) => (
                         <div key={index} className="flex gap-3">
-                            <span className="w-4 shrink-0 text-right text-slate-700 select-none">{index + 1}</span>
+                            <span className="w-4 shrink-0 text-right text-slate-450 select-none">{index + 1}</span>
                             <span className="whitespace-pre text-slate-300">
                                 {appearance.text.slice(0, visible[index])}
                                 {index === typing && <span className="intro-caret" />}
@@ -122,7 +122,7 @@ export const BootIntro: FC<{ onDone: () => void }> = ({ onDone }) => {
                 </div>
             </div>
 
-            <p className="absolute bottom-8 font-mono text-[11px] text-slate-600">any key to skip</p>
+            <p className="absolute bottom-8 font-mono text-[11px] text-slate-450">any key to skip</p>
         </div>
     )
 }

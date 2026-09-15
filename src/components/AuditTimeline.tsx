@@ -24,14 +24,14 @@ export const AuditTimeline: FC = () => (
                 </div>
 
                 <h3 className="mt-2 text-lg font-semibold text-white">{audit.target}</h3>
-                {audit.targetNote && <p className="text-xs text-slate-500">{audit.targetNote}</p>}
+                {audit.targetNote && <p className="text-xs text-slate-450">{audit.targetNote}</p>}
 
                 <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400">{audit.summary}</p>
 
                 <dl className="mt-4 space-y-2">
                     {audit.findings.map((finding) => (
                         <div key={finding.label} className="flex flex-col gap-0.5 text-xs sm:flex-row sm:gap-3">
-                            <dt className="w-24 shrink-0 font-mono uppercase tracking-[0.08em] text-slate-500">{finding.label}</dt>
+                            <dt className="w-24 shrink-0 font-mono uppercase tracking-[0.08em] text-slate-450">{finding.label}</dt>
                             <dd className="max-w-2xl leading-relaxed text-slate-400">{finding.detail}</dd>
                         </div>
                     ))}

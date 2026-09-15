@@ -56,7 +56,7 @@ export const Nav: FC<NavProps> = ({ track, onTrack }) => {
                             onClick={() => onTrack(id)}
                             aria-pressed={track === id}
                             className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-                                track === id ? "bg-accent-500/15 text-accent-300" : "text-slate-500 hover:text-slate-300"
+                                track === id ? "bg-accent-500/15 text-accent-300" : "text-slate-450 hover:text-slate-300"
                             }`}
                         >
                             {TRACKS[id].label}

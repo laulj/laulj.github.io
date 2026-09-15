@@ -55,7 +55,7 @@ export const ProjectGrid: FC<{ track: TrackId }> = ({ track }) => {
                                 >
                                     {link.label} →
                                 </a>
-                                {link.note && <p className="mt-1 text-[11px] text-slate-500">{link.note}</p>}
+                                {link.note && <p className="mt-1 text-[11px] text-slate-450">{link.note}</p>}
                             </div>
                         ))}
                     </div>

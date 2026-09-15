@@ -43,7 +43,7 @@ export const Hero: FC<{ track: TrackId }> = ({ track }) => {
                     </a>
                 </div>
 
-                <p data-reveal className="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[11px] text-slate-500">
+                <p data-reveal className="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[11px] text-slate-450">
                     {CONTACT.map((item) => (
                         <a key={item.label} href={item.href} target="_blank" rel="noreferrer" className="transition-colors hover:text-accent-400">
                             {item.label}

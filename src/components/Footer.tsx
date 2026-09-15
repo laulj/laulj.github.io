@@ -35,7 +35,7 @@ export const Footer: FC<{ track: TrackId }> = ({ track }) => {
                     </div>
                 </div>
 
-                <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-6 font-mono text-[11px] text-slate-500">
+                <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-6 font-mono text-[11px] text-slate-450">
                     <p>Lau Lok Jing · Kuala Lumpur, Malaysia</p>
                     <p>React 19 · Vite · Tailwind CSS 4 · GSAP — self-hosted fonts, no third-party origins.</p>
                 </div>

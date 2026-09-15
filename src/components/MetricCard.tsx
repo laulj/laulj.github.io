@@ -22,7 +22,7 @@ export const MetricCard: FC<{ metric: Metric }> = ({ metric }) => {
                 <span className="rounded-full border border-white/10 bg-ink-950/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-slate-400">
                     {PROVENANCE_LABEL[provenance.kind]}
                 </span>
-                <span className="font-mono text-[11px] text-slate-500">as of {metric.asOf}</span>
+                <span className="font-mono text-[11px] text-slate-450">as of {metric.asOf}</span>
             </div>
 
             <button
@@ -47,7 +47,7 @@ export const MetricCard: FC<{ metric: Metric }> = ({ metric }) => {
                             {provenance.url}
                         </a>
                     )}
-                    {note && <p className="mt-3 border-t border-white/5 pt-3 text-slate-500">{note}</p>}
+                    {note && <p className="mt-3 border-t border-white/5 pt-3 text-slate-450">{note}</p>}
                 </div>
             )}
         </figure>
