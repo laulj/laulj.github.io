@@ -25,6 +25,28 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
     {
+        /**
+         * The only paid engagement on this page, and the only entry whose evidence
+         * is a third party's live site rather than a repository of my own. That makes
+         * it the strongest claim here and the easiest one to get wrong: the 2023
+         * toolchain named on the resume is not what efengspine.com serves today, so
+         * the card describes both states instead of quietly describing one.
+         */
+        name: "Efeng Spine Healing Center",
+        blurb: "A real client's clinic site in Shah Alam — the original 2023 build (Ant Design, React), carried through three releases, then rebuilt in September 2026 as a two-locale prerendered app. The rebuild retired Create React App, Ant Design, Bootstrap and React Spring in favour of React Router 7, Vite and Tailwind, because 52 static pages needed none of them.",
+        proof: "In production at efengspine.com: 52 prerendered pages — 26 routes × 2 locales — countable in the published sitemap.",
+        stack: ["React Router 7", "Vite", "TypeScript", "Tailwind CSS 4", "pnpm", "Netlify"],
+        tracks: ["dev"],
+        links: [
+            {
+                label: "Live site",
+                href: "https://efengspine.com",
+                note: "A client's site, and the source is theirs — private, so there is no repository to read.",
+            },
+        ],
+        featured: ["dev"],
+    },
+    {
         name: "TradeOps Nexus",
         blurb: "Self-hosted arbitrage platform: a React 19 dashboard over an Express + SQLite API that consolidates spot, perpetual-futures and funding-rate PnL from nine venues into one ledger. Includes SQLite WAL tuning, a custom aggregate cache that ingestion writes invalidate, per-user row scoping, and egress accounting.",
         proof: "124 backend tests, a documented OpenAPI surface, and a bundle-size budget that fails CI when exceeded.",
